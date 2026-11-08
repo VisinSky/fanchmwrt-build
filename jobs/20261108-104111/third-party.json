@@ -1,0 +1,23 @@
+{
+  "mode": "auto",
+  "packages": [
+    "kmod-ovpn-backports",
+    "luci-app-ddns-go",
+    "luci-i18n-ddns-go-zh-cn",
+    "ddns-go",
+    "luci-app-openvpn",
+    "luci-i18n-openvpn-zh-cn",
+    "openvpn-openssl",
+    "luci-app-openclash"
+  ],
+  "repos": [
+    "https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base",
+    "https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci",
+    "https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages",
+    "https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing",
+    "https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony",
+    "https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages",
+    "https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea"
+  ],
+  "generated": "2026-11-08 10:41:12"
+}
