@@ -1,0 +1,10 @@
+#!/bin/sh
+# FanchmWrt Builder 生成的首次启动配置
+
+uci -q set network.lan.ipaddr='192.168.100.1'
+uci -q set network.lan.proto='static'
+uci -q set dhcp.lan.ignore='0'
+uci -q set luci.main.mediaurlbase='/luci-static/fanchmwrt'
+uci -q commit
+
+exit 0
