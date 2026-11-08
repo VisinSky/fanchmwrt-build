@@ -1,0 +1,28 @@
+#!/bin/sh
+# FanchmWrt Builder · 追加额外 apk 信任公钥（只增不改，不影响已有公钥）
+# apk 信任模型：/etc/apk/keys/ 内任意一把公钥能验过软件包/索引即被信任；
+# 多把公钥可长期共存。本脚本只是往该目录多放几个 .pem 文件，绝不动/覆盖
+# OpenWrt 自带或编译自身（BUILD_KEY_APK_PUB）的公钥。
+[ -f /etc/fanchmwrt-apk-keys.done ] && exit 0
+LOG=/tmp/fanchmwrt-apk-keys.log
+: > "$LOG"
+mkdir -p /etc/apk/keys
+# 额外信任公钥：immortalwrt-25.12.pem
+cat > /etc/apk/keys/immortalwrt-25.12.pem <<'APK_KEY_EOF'
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHWuRPmchzSKwenEyU7Og06A7Fi5s
+kJ2yc3B/0+CboE4Gd2DLuJGdq2E7qX8fqyb2+EJgwmBUadshKA0hET7EjA==
+-----END PUBLIC KEY-----
+APK_KEY_EOF
+
+# 额外信任公钥：openwrt-25.12.pem
+cat > /etc/apk/keys/openwrt-25.12.pem <<'APK_KEY_EOF'
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAECqruC4JU7pfpnkQuueBaT29I1dFx
+Xbc7xYsY5R2+r3Hg3SO3B2QLpMaghA9Uzx/E2PGaNkYe24uPPg/n7Q9Jeg==
+-----END PUBLIC KEY-----
+APK_KEY_EOF
+
+echo "[密钥] 已写入额外 apk 公钥" >> "$LOG"
+: > /etc/fanchmwrt-apk-keys.done
+exit 0
