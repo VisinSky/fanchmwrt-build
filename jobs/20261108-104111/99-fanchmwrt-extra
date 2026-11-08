@@ -1,0 +1,56 @@
+#!/bin/sh
+# FanchmWrt Builder · 第三方软件源与附加包（首次开机由 uci-defaults 执行）
+# 源码树中没有这些二进制包，因此不写入 .config，改由系统包管理器运行时安装。
+[ -f /etc/fanchmwrt-extra.done ] && exit 0
+PKGS='kmod-ovpn-backports luci-app-ddns-go luci-i18n-ddns-go-zh-cn ddns-go luci-app-openvpn luci-i18n-openvpn-zh-cn openvpn-openssl luci-app-openclash'
+MODE='auto'
+LOG=/tmp/fanchmwrt-extra.log
+
+install_extra() {
+  # 等待网络就绪（最多约 3 分钟）
+  n=0
+  while [ "$n" -lt 36 ]; do
+    if wget -q -T 2 -O /dev/null https://downloads.immortalwrt.org/ 2>/dev/null \
+       || ping -c 1 -W 2 223.5.5.5 >/dev/null 2>&1; then break; fi
+    n=$((n + 1)); sleep 5
+  done
+  if command -v apk >/dev/null 2>&1; then
+    apk update >>"$LOG" 2>&1 || true
+    apk add --no-cache --allow-untrusted $PKGS >>"$LOG" 2>&1
+  elif command -v opkg >/dev/null 2>&1; then
+    opkg update >>"$LOG" 2>&1 || true
+    opkg install $PKGS >>"$LOG" 2>&1
+  else
+    echo "未找到 apk / opkg，跳过附加包安装" >>"$LOG"
+    return 1
+  fi
+}
+
+if command -v apk >/dev/null 2>&1; then
+  mkdir -p /etc/apk/repositories.d
+  cat > /etc/apk/repositories.d/fanchmwrt-extra.list <<'FANCHMWRT_EOF'
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony
+https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages
+https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea
+FANCHMWRT_EOF
+elif command -v opkg >/dev/null 2>&1; then
+  mkdir -p /etc/opkg
+  cat > /etc/opkg/customfeeds.conf <<'FANCHMWRT_EOF'
+src/gz fanchmwrt_extra_0 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base
+src/gz fanchmwrt_extra_1 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci
+src/gz fanchmwrt_extra_2 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages
+src/gz fanchmwrt_extra_3 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing
+src/gz fanchmwrt_extra_4 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony
+src/gz fanchmwrt_extra_5 https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages
+src/gz fanchmwrt_extra_6 https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea
+FANCHMWRT_EOF
+fi
+
+if [ "$MODE" != "repo" ] && [ -n "$PKGS" ]; then
+  ( install_extra && : > /etc/fanchmwrt-extra.done ) >/dev/null 2>&1 &
+fi
+exit 0
