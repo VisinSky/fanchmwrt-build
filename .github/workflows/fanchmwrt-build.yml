@@ -71,11 +71,20 @@ jobs:
           restore-keys: |
             ccache-${{ inputs.branch }}-
 
+      - name: 缓存源码镜像（加速后续运行，避免每次重新克隆全量源码）
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/src-mirror
+          key: mirror-${{ inputs.branch }}-${{ github.run_id }}
+          restore-keys: |
+            mirror-${{ inputs.branch }}-
+
       - name: 执行编译
         env:
           JOB: ${{ inputs.job }}
           SHARE: /home/runner/share
           SRC: /home/runner/openwrt
+          SRC_MIRROR: /home/runner/src-mirror/repo.git
           DL: /home/runner/dl
           CCACHE_DIR: /home/runner/.ccache
           REPO_URL: ${{ inputs.repo_url }}
