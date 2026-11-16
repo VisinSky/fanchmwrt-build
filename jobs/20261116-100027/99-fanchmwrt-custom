@@ -1,0 +1,8 @@
+#!/bin/sh
+# FanchmWrt Builder 生成的首次启动配置
+
+uci -q set dhcp.lan.ignore='0'
+uci -q set luci.main.mediaurlbase='/luci-static/fanchmwrt'
+uci -q commit
+
+exit 0
