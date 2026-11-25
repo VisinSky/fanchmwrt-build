@@ -1,0 +1,62 @@
+#!/bin/sh
+# FanchmWrt Builder · 系统软件源（首次开机由 uci-defaults 执行）
+# 只替换/追加源地址，不安装任何包；选中的包应在编译阶段由 CONFIG_PACKAGE 编入。
+MODE='replace'
+[ -f /etc/fanchmwrt-repos.done ] && exit 0
+LOG=/tmp/fanchmwrt-repos.log
+: > "$LOG"
+
+if [ -d /etc/apk/repositories.d ]; then
+  APK_LIST=/etc/apk/repositories.d/distfeeds.list
+  if [ "$MODE" = "replace" ]; then
+    cat > "$APK_LIST" <<'FANCHMWRT_EOF'
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea/packages.adb
+FANCHMWRT_EOF
+  else
+    cat >> "$APK_LIST" <<'FANCHMWRT_EOF'
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages/packages.adb
+https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea/packages.adb
+FANCHMWRT_EOF
+  fi
+  echo "[源] apk distfeeds.list 已写入 ($MODE)" >> "$LOG"
+fi
+
+if [ -d /etc/opkg ]; then
+  OPKG_CONF=/etc/opkg/distfeeds.conf
+  if [ "$MODE" = "replace" ]; then
+    cat > "$OPKG_CONF" <<'FANCHMWRT_EOF'
+src/gz fanchmwrt_0 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base
+src/gz fanchmwrt_1 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci
+src/gz fanchmwrt_2 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages
+src/gz fanchmwrt_3 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing
+src/gz fanchmwrt_4 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony
+src/gz fanchmwrt_5 https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages
+src/gz fanchmwrt_6 https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea
+FANCHMWRT_EOF
+  else
+    cat >> "$OPKG_CONF" <<'FANCHMWRT_EOF'
+src/gz fanchmwrt_0 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/base
+src/gz fanchmwrt_1 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/luci
+src/gz fanchmwrt_2 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/packages
+src/gz fanchmwrt_3 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/routing
+src/gz fanchmwrt_4 https://downloads.immortalwrt.org/releases/25.12.2/packages/x86_64/telephony
+src/gz fanchmwrt_5 https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/packages
+src/gz fanchmwrt_6 https://downloads.immortalwrt.org/releases/25.12.2/targets/x86/64/kmods/6.12.103-1-0413601b1c3f0490e17f340fe09229ea
+FANCHMWRT_EOF
+  fi
+  echo "[源] opkg distfeeds.conf 已写入 ($MODE)" >> "$LOG"
+fi
+
+: > /etc/fanchmwrt-repos.done
+exit 0
